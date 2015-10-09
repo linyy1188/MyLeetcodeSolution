@@ -3,6 +3,48 @@ import java.util.List;
 import java.lang.Math;
 
 public class Solution {
+	public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        ListNode pointer = null,header = null ,waver = null;
+        if (l1 != null) {
+                header = l1;
+        }
+        else if(l2 != null){
+            header = l2;
+        }
+        if (l2 != null && l2.val < header.val)
+        {
+            header = l2;
+        }
+        if (header == null ) return null;
+        if (l1 == header && l1 != null) {
+                l1 = l1.next;
+            }
+            else {
+                l2 = l2.next;
+            }
+        waver = header;
+        while (l1 != null || l2 != null) {
+            if (l1 != null) {
+                pointer = l1;
+            }
+            else if(l2 != null){
+                pointer = l2;
+            }
+            if (l2 != null && l2.val < pointer.val)
+            {
+                pointer = l2;
+            }
+            if (l1 == pointer && l1 != null) {
+                l1 = l1.next;
+            }
+            else {
+                l2 = l2.next;
+            }
+            waver.next = pointer;
+            waver = waver.next;
+        }
+        return header;
+    }
     public boolean isValid(String s) {
         char[] ch = new char[s.length()];
         int count = 0;
