@@ -3,6 +3,213 @@ import java.util.List;
 import java.lang.Math;
 
 public class Solution {
+    //--------------------
+    public int removeElement(int[] nums, int val) {
+        int count = 1, non = 0;
+        if (nums.length == 0) {
+            return 0;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] != val) {
+                nums[non] = nums[i];
+                non++;
+            }
+        }
+        return non;
+    }
+    //--------------------
+    public int removeDuplicates(int[] nums) {
+        int count = 1, non = 1;;
+        if (nums.length == 0) {
+            return 0;
+        }
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] != nums[i-1]) {
+                nums[non] = nums[i];
+                count++;
+                non++;
+            }else {count ++;}
+        }
+        return non;
+    }
+    //--------------------
+    public ListNode reverseKGroup(ListNode head, int k) {
+        ListNode ans = null, tail = null, p1 = null, p2 = null, p3 = null;
+        int count = 1;
+        tail = head;
+        while (count < k){
+            if (tail !=null && tail.next != null) {
+                tail = tail.next;
+            } else {
+                break;
+            }
+            count++;
+        }
+        if (count != k || head == null || k == 1) {
+            return head;
+        }
+        ans = tail;
+        p1 = head;
+        p2 = head;
+        head = head.next;
+        while (head != tail) {
+            p3 = head.next;
+            head.next = p2;
+            p2 = head;
+            head =  p3;
+        }
+        p3 = head.next;
+        head.next = p2;
+        head = p3;
+        while (true) {
+            count = 1;
+            tail = head;
+            while (count < k){
+                if (tail !=null && tail.next != null) {
+                    tail = tail.next;
+                } else {
+                    break;
+                }
+                count++;
+            }
+            if (count != k ) {
+                p1.next = head;
+                break;
+            }
+            //reverse
+            
+            System.out.println(tail.val);
+            p1.next = tail;
+            p1 = head;
+            p2 = head;
+            head = head.next;
+            while (head != tail) {
+                p3 = head.next;
+                head.next = p2;
+                p2 = head;
+                head =  p3;
+            }
+            p3 = head.next;
+            head.next = p2;
+            head = p3;
+        }
+        return ans;
+    }
+    //--------------------
+    public ListNode swapPairs(ListNode head) {
+        ListNode p1,p2,pointer=null;
+        p1 = head;
+        if (p1 != null && p1.next !=null){
+            p2 = p1.next;
+            ListNode tmp = p2.next;
+            p2.next = p1;
+            p1.next = tmp;
+            head = p2;
+            pointer = p1;
+            p1 = p1.next;
+        }
+        while (p1 != null && p1.next !=null){
+            p2 = p1.next;
+            pointer.next = p2;
+            ListNode tmp = p2.next;
+            p2.next = p1;
+            p1.next = tmp;
+            pointer = p1;
+            p1 = p1.next;
+        }
+        return head;
+    }
+    //--------------------
+    public ListNode mergeKLists(ListNode[] lists) {
+        //build Min Heap
+        ListNode[] heap = new ListNode[lists.length + 1];
+        int heapSize = 0;
+        for (int i = 0; i< lists.length; i++) {
+            if (lists[i] != null) {
+                insertMinHeap(heap, heapSize + 1, heapSize + 1, lists[i]);
+                heapSize ++;
+            }
+        }
+        //buid list
+        ListNode ans = null, pointer = null;
+        System.out.println(heapSize);
+        if (heapSize > 0) {
+            ans = heap[1];
+            pointer = heap[1];
+            if (heap[1].next != null) {
+                insertMinHeap(heap, 1, heapSize, heap[1].next);
+            } else {
+                insertMinHeap(heap, 1, heapSize - 1, heap[heapSize]);
+                heapSize--;
+            }
+            
+        } else {
+            return null;
+        }
+        while (heapSize > 0) {
+            pointer.next = heap[1];
+            pointer = pointer.next;
+            if (heap[1].next != null) {
+                insertMinHeap(heap, 1, heapSize, heap[1].next);
+            } else {
+                insertMinHeap(heap, 1, heapSize - 1, heap[heapSize]);
+                heapSize--;
+            }
+        }
+        return ans;
+    }
+    private void insertMinHeap(ListNode[] minHeap, int node, int nodeNum, ListNode val) {
+        minHeap[node] = val;
+        upMinHeap(minHeap, node);
+        
+        downMinHeap(minHeap, node, nodeNum);
+    }
+    private void upMinHeap(ListNode[] minHeap, int node){
+        if (node == 1) {
+            return;
+        }
+        if (minHeap[node / 2].val <= minHeap[node].val) {
+            return;
+        }
+        ListNode temp = minHeap[node];
+        minHeap[node] = minHeap[node / 2];
+        minHeap[node / 2] = temp;
+        upMinHeap(minHeap, node/2);
+    }
+    private void downMinHeap(ListNode[] minHeap, int node, int nodeNum) {
+        if (node * 2 > nodeNum) {
+            return;
+        }
+        int temp = node * 2;
+        if (node *2 + 1 <= nodeNum && minHeap[node * 2 + 1].val < minHeap[temp].val) {
+            temp = node * 2 + 1;
+        }
+        if (minHeap[temp].val < minHeap[node].val){
+            ListNode tmp = minHeap[temp];
+            minHeap[temp] = minHeap[node];
+            minHeap[node] = tmp;
+            downMinHeap(minHeap, temp, nodeNum);
+        }
+    }
+    //---------------------
+    public List<String> generateParenthesis(int n) {
+        List<String> ans = new ArrayList<String>();
+        parenthesisGenerator(ans, "", 0, n);
+        return ans;
+    }
+    private void parenthesisGenerator(List<String> l, String s, int inStack, int outStack) {
+        if (outStack == 0 && inStack ==0){
+            l.add(s);
+        }
+        if (outStack != 0 ) {
+            parenthesisGenerator(l, s + "(", inStack + 1, outStack - 1);
+        }
+        if (inStack != 0 ){
+            parenthesisGenerator(l, s + ")", inStack - 1, outStack);
+        }
+        return;
+    }
+    //--------------
 	public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
         ListNode pointer = null,header = null ,waver = null;
         if (l1 != null) {
@@ -45,6 +252,7 @@ public class Solution {
         }
         return header;
     }
+    /------------
     public boolean isValid(String s) {
         char[] ch = new char[s.length()];
         int count = 0;
@@ -64,6 +272,7 @@ public class Solution {
         if (count != 0) return false;
         return true;
     }
+    //-----------
     public List<List<Integer>> fourSum(int[] nums, int target) {
         List<List<Integer>> ans = new ArrayList<List<Integer>>();
         quickSort(0, nums.length - 1, nums);
@@ -79,6 +288,7 @@ public class Solution {
         }
         return ans;
     }
+    //-----------
     public ListNode removeNthFromEnd(ListNode head, int n) {
         ListNode point = head;
         if (point.next == null ){
@@ -104,12 +314,14 @@ public class Solution {
         point.next = point.next.next;
         return head;
     }
+    //-----------
     public List<String> letterCombinations(String digits) {
         List<String> ans = new ArrayList<String>();
         String anstmp = "";
         LetterCombinationsDFS(digits, 0, ans, anstmp);
         return ans;
     }
+    //-----------
     public void LetterCombinationsDFS(String digits, int index, List<String> ans, String anstmp) {
         if (index == digits.length() ) {
             if (anstmp != "") {
@@ -134,6 +346,7 @@ public class Solution {
             LetterCombinationsDFS(digits, index + 1, ans, anstmp + (char) ('a' + (start + i)));
         }
     }
+    //-----------
     public int threeSumClosest(int[] nums, int target) {
         quickSort(0, nums.length - 1, nums);
         int ans = nums[nums.length-1]+nums[nums.length-2]+ nums[nums.length-3];
@@ -153,6 +366,7 @@ public class Solution {
         }
         return ans;
     }
+    //-----------
     public List<List<Integer>> threeSum(int[] nums) {
         List<List<Integer>> ans = new ArrayList<List<Integer>>();
         quickSort(0, nums.length - 1, nums);
@@ -180,6 +394,7 @@ public class Solution {
         }
         return ans;
     }
+    //-----------
     public int[] twoSum(int[] nums, int target) {
         int i = 0, j = nums.length - 1;
         int[] keys = new int[nums.length];
@@ -229,29 +444,7 @@ public class Solution {
         }
         return ans;
     }
-    public List<List<Integer>> twoSum2(int[] nums, int target, int key) {
-        int i = key + 1, j = nums.length - 1;
-        List<List<Integer>> ans = new ArrayList<List<Integer>>();
-        while (i < j){
-            if (i > key + 1 && nums[i] ==nums[i - 1]) {
-                i++;
-                continue;
-            }
-            if (nums[i] + nums[j] == target) {
-                List list = new ArrayList<Integer>();
-                list.add(nums[key]);
-                list.add(nums[i]);
-                list.add(nums[j]);
-                ans.add(list);
-                i++;
-            } else if (nums[i] +nums[j] > target) {
-                j--;
-            } else {
-                i++;
-            }
-        }
-        return ans;
-    }
+    //-----------
     public void quickSort(int l, int r, int[] key1) {
         int i = l, j = r, mid, tmp;
         if (l < r) {
