@@ -3,6 +3,65 @@ import java.util.List;
 import java.lang.Math;
 
 public class Solution {
+    public boolean isValid(String s) {
+        char[] ch = new char[s.length()];
+        int count = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '{' || s.charAt(i) == '[' || s.charAt(i) == '(') {
+                ch[count] = s.charAt(i);
+                count++;
+            }
+            else {
+                if (count < 1) return false;
+                if (s.charAt(i) - ch[count - 1] > 2) {
+                    return false;
+                }
+                count--;
+            }
+        }
+        if (count != 0) return false;
+        return true;
+    }
+    public List<List<Integer>> fourSum(int[] nums, int target) {
+        List<List<Integer>> ans = new ArrayList<List<Integer>>();
+        quickSort(0, nums.length - 1, nums);
+        for (int i = 0 ; i < nums.length - 3; i++ ) {
+            if (i > 0 && nums[i] == nums[i - 1]) {
+                continue;
+            }
+            List<List<Integer>> tmp = threeSum2(nums, target, target - nums[i], i);
+            for (int j = 0; j < tmp.size(); j++) {
+                tmp.get(j).add(0, nums[i]);
+            }
+            ans.addAll(tmp);
+        }
+        return ans;
+    }
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        ListNode point = head;
+        if (point.next == null ){
+            return null;
+        }
+        int count = 1;
+        while (point.next != null) {
+            point = point.next;
+            count ++;
+        }
+        if (n > count) {
+            return head;
+        }
+        if (n == count) {
+            return head.next;
+        }
+        point = head;
+        int i = 1;
+        while (i < count - n) {
+            point = point.next;
+            i++;
+        }
+        point.next = point.next.next;
+        return head;
+    }
     public List<String> letterCombinations(String digits) {
         List<String> ans = new ArrayList<String>();
         String anstmp = "";
@@ -64,6 +123,21 @@ public class Solution {
         }
         return ans;
     }
+    public List<List<Integer>> threeSum2(int[] nums, int target, int key) {
+        List<List<Integer>> ans = new ArrayList<List<Integer>>();
+        quickSort(0, nums.length - 1, nums);
+        for (int i = key + 1 ; i < nums.length - 2; i++ ) {
+            if (i > key + 1 && nums[i] == nums[i - 1]) {
+                continue;
+            }
+            List<List<Integer>> tmp = twoSum2(nums, target, target - nums[i], i);
+            //for (int j = 0; j < tmp.size(); j++) {
+            //    tmp.get(j).add(0, nums[i]);
+            //}
+            ans.addAll(tmp);
+        }
+        return ans;
+    }
     public int[] twoSum(int[] nums, int target) {
         int i = 0, j = nums.length - 1;
         int[] keys = new int[nums.length];
@@ -98,14 +172,37 @@ public class Solution {
                 i++;
                 continue;
             }
-            if (nums[i] + nums[j] == -target) {
+            if (nums[i] + nums[j] == target) {
                 List list = new ArrayList<Integer>();
-                list.add(target);
+                list.add(nums[key]);
                 list.add(nums[i]);
                 list.add(nums[j]);
                 ans.add(list);
                 i++;
-            } else if (nums[i] +nums[j] > -target) {
+            } else if (nums[i] +nums[j] > target) {
+                j--;
+            } else {
+                i++;
+            }
+        }
+        return ans;
+    }
+    public List<List<Integer>> twoSum2(int[] nums, int target, int key) {
+        int i = key + 1, j = nums.length - 1;
+        List<List<Integer>> ans = new ArrayList<List<Integer>>();
+        while (i < j){
+            if (i > key + 1 && nums[i] ==nums[i - 1]) {
+                i++;
+                continue;
+            }
+            if (nums[i] + nums[j] == target) {
+                List list = new ArrayList<Integer>();
+                list.add(nums[key]);
+                list.add(nums[i]);
+                list.add(nums[j]);
+                ans.add(list);
+                i++;
+            } else if (nums[i] +nums[j] > target) {
                 j--;
             } else {
                 i++;
@@ -131,7 +228,6 @@ public class Solution {
         }
         if (i < r) quickSort(i, r, key1);
         if (j > l) quickSort(l, j, key1);
-        
     }
     public void quickSort2Keys(int l, int r, int[] key1, int key2[]) {
         int i = l, j = r, mid =key1[(l+r)/2], tmp;
@@ -146,6 +242,5 @@ public class Solution {
         }
         if (i < r) quickSort2Keys(i, r, key1, key2);
         if (j > l) quickSort2Keys(l, j, key1, key2);
-        
     }
 }
