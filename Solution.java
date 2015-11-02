@@ -3,7 +3,82 @@ import java.util.List;
 import java.lang.Math;
 
 public class Solution {
-//--------------------
+	//--------------------
+    public int climbStairs(int n) {
+        if (n == 1) return 1;
+        int[] opt = new int[n + 1];
+        opt[0] = 1; opt[1] = 1;
+        for (int i = 2; i <=n; i++) {
+            opt[i] = opt[i - 1] + opt[i - 2];
+        }
+        return opt[n];
+    }
+	//--------------------
+	public int minPathSum(int[][] grid) {
+        int[][] opt = new int[grid.length + 1][grid[0].length + 1];
+        for (int i = 1; i <= grid.length; i++) {
+            for (int j = 1; j <= grid[0].length; j++) {
+                if (i != 1 && j != 1) {
+                    opt[i][j] = min(opt[i - 1][j], opt[i][j - 1]) + grid[i - 1][j - 1];
+                }
+                else
+                {
+                    opt[i][j] = opt[i - 1][j] + opt[i][j - 1] + grid[i - 1][j - 1];
+                }
+            }
+        }
+        return opt[grid.length][grid[0].length];
+    }
+	//--------------------
+    public int numTrees(int n) {
+        int[] opt = new int[n + 1];
+        opt[1] = 1; 
+        opt[0] = 1;
+        for (int i = 2; i <= n; i++) {
+            for (int j = 1; j <= i; j++) {
+                opt[i] += opt[j - 1] * opt[i - j];
+            }
+        }
+        return opt[n];
+    }
+	//--------------------
+    public int uniquePathsWithObstacles(int[][] obstacleGrid) {
+        int[][] opt = new int[obstacleGrid.length + 1][obstacleGrid[0].length + 1];
+        opt[1][0] = 1;
+        for (int i = 1; i <= obstacleGrid.length; i++) {
+            for (int j = 1; j <= obstacleGrid[0].length; j++) {
+                if (obstacleGrid[i - 1][j - 1] != 1) {
+                    opt[i][j] = opt[i - 1][j] + opt[i][j - 1];
+                }
+            }
+        }
+        return opt[obstacleGrid.length][obstacleGrid[0].length];
+    }
+	//--------------------
+    public int uniquePaths(int m, int n) {
+        if (n == 0 || m == 0) return 0;
+        int[][] opt = new int[m + 1][n + 1];
+        opt[1][0] = 1;
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                opt[i][j] = opt[i - 1][j] + opt[i][j - 1];
+            }
+        }
+        return opt[m][n];
+    }
+	//--------------------
+    public int maxSubArray(int[] nums) {
+        if (nums.length == 0) 
+            return 0;
+        int[] opt = new int[nums.length + 1];
+        int maxans = nums[0];
+        for (int i = 0; i < nums.length; i++) {
+            opt[i + 1] = max(opt[i], 0) + nums[i];
+            maxans = max(maxans, opt[i + 1]);
+        }
+        return maxans;
+    }
+	//--------------------
 	public boolean isMatch(String s, String p) {
         if (s.length() == 0) {
             if (p.length() == 0) return true;
@@ -63,13 +138,13 @@ public class Solution {
                 }           
             }
         }
-        int max = 0;
+        int maxnum = 0;
         for (int i = 0; i < s.length(); i++) {
-            if (max < opt[i]) {
-                max = opt[i];
+            if (maxnum < opt[i]) {
+                maxnum = opt[i];
             }
         }
-        return max;
+        return maxnum;
     }
     //--------------------
     public int removeElement(int[] nums, int val) {
@@ -545,5 +620,14 @@ public class Solution {
         }
         if (i < r) quickSort2Keys(i, r, key1, key2);
         if (j > l) quickSort2Keys(l, j, key1, key2);
+    }
+	//---------------------
+    private int max(int a, int b ) {
+        if (a > b ) return a;
+        return b;
+    }
+	private int min(int a, int b ) {
+        if (a < b ) return a;
+        return b;
     }
 }
