@@ -3,6 +3,74 @@ import java.util.List;
 import java.lang.Math;
 
 public class Solution {
+//--------------------
+	public boolean isMatch(String s, String p) {
+        if (s.length() == 0) {
+            if (p.length() == 0) return true;
+            for (int i = 0; i < p.length(); i++) {
+                if (p.charAt(i) != '*') {
+                    return false;
+                }
+            }
+            return true;
+        }
+        boolean[] opt = new boolean[s.length() + 1];
+        int count = 0;
+        opt[0] = true;
+        for ( int i = 0; i < p.length(); i++) {
+            if (p.charAt(i) == '*') {
+                for (int j = count; j < s.length(); j++) {
+                    if (!opt[j + 1]) {
+                        opt[j + 1] = opt[j];
+                    }
+                }
+            } else if (p.charAt(i) == '?') {
+                for (int j = s.length(); j > count; j--) {
+                    opt[j] = opt[j - 1];
+                }
+                if (s.length() <= count) {
+                    return false;
+                }
+                count++;
+            } else {
+                for (int j = s.length(); j > count; j--) {
+                    if (s.charAt(j - 1) == p.charAt(i)) {
+                        opt[j] = opt[j - 1];
+                    }
+                    else {
+                        opt[j] = false;
+                    }
+                }
+                if (s.length() <= count) {
+                    return false;
+                }
+                count++;
+            }
+        }
+        return opt[s.length()];
+    }
+	//--------------------
+	 public int longestValidParentheses(String s) {
+        if (s.length() == 0) {
+            return 0;
+        }
+        int[] opt = new int[s.length()];
+        for (int i = 1; i < s.length(); i++) {
+            if (s.charAt(i) == ')' && i - opt[i-1] - 1 >= 0 && s.charAt(i - opt[i-1] - 1) == '(') {
+                opt[i] = opt[i-1] + 2;
+                if (i - opt[i-1] - 1 > 0) {
+                    opt[i] += opt[i - opt[i-1] - 2];
+                }           
+            }
+        }
+        int max = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (max < opt[i]) {
+                max = opt[i];
+            }
+        }
+        return max;
+    }
     //--------------------
     public int removeElement(int[] nums, int val) {
         int count = 1, non = 0;
@@ -252,7 +320,7 @@ public class Solution {
         }
         return header;
     }
-    /------------
+    //------------
     public boolean isValid(String s) {
         char[] ch = new char[s.length()];
         int count = 0;
