@@ -3,6 +3,63 @@ import java.util.List;
 import java.lang.Math;
 
 public class Solution {
+    //--------------------
+    public int maximalRectangle(char[][] matrix) {
+        if (matrix == null || matrix.length ==0 || matrix[0].length == 0) return 0;
+        int[][] upleft = new int[matrix.length + 1][matrix[0].length + 1];
+        int[][] opt = new int[matrix.length][matrix[0].length];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                upleft[i + 1][j + 1] = upleft[i + 1][j] + upleft[i][j + 1] - upleft[i][j];
+                if (matrix[i][j] == '1') {
+                    upleft[i + 1][j + 1]++;
+                }
+            }
+        }
+        int maxans = 0;
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                if (matrix[i][j] == '1') {
+                    for (int s = i; s >=0; s--) {
+                        for (int t = j; t >= 0; t--) {
+                            if (upleft[i + 1][j + 1] - upleft[s][j + 1] - upleft[i + 1][t] + upleft[s][t]
+                                == (i - s + 1) * (j - t + 1)) {
+                                opt[i][j] = max((i - s + 1) * (j - t + 1), opt[i][j]);
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+                }
+                maxans = max(maxans, opt[i][j]);
+            }
+        }
+        return maxans;
+    }
+    //--------------------
+    public int minDistance(String word1, String word2) {
+        int[][] opt = new int[word1.length() + 1][word2.length() + 1];
+        for (int j = 0; j < word2.length(); j++) {
+            opt[0][j + 1] = j + 1;
+        }
+        for (int j = 0; j < word1.length(); j++) {
+            opt[j + 1][0] = j + 1;
+        }
+        for (int i = 0; i < word1.length(); i++) {
+            for (int j = 0; j < word2.length(); j++) {
+                //delete
+                opt[i + 1][j + 1] = opt[i][j + 1] + 1;
+                //add
+                opt[i + 1][j + 1] = min (opt[i + 1][j] + 1, opt[i + 1][j + 1]);
+                //replace
+                opt[i + 1][j + 1] = min (opt[i][j] + 1, opt[i + 1][j + 1]);
+                if (word1.charAt(i) == word2.charAt(j)) {
+                    opt[i + 1][j + 1] = min (opt[i][j], opt[i + 1][j + 1]);
+                }
+            }
+        }
+        return opt[word1.length()][word2.length()];
+    }
 	//--------------------
     public int climbStairs(int n) {
         if (n == 1) return 1;
