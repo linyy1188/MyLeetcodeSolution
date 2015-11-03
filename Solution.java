@@ -3,6 +3,25 @@ import java.util.List;
 import java.lang.Math;
 
 public class Solution {
+	//----------------- iter. Math.min
+	public int minimumTotal(List<List<Integer>> triangle) {
+        if (triangle.isEmpty()) return 0;
+        int[] opt = new int[triangle.size() + 1];
+        for (int i = 0; i <triangle.size(); i++) {
+            int temp = opt[1];
+            for (int j = 0; j < i; j++) {
+                int foo = min(temp, opt[j + 1]);
+                temp = opt[j + 1];
+                opt[j + 1] = foo + triangle.get(i).get(j);
+            }
+            opt[i + 1] = temp + triangle.get(i).get(i);
+        }
+        int minans = opt[1];
+        for (int i = 2; i <= triangle.size(); i++) {
+            minans = min(minans, opt[i]);
+        }
+        return minans;
+    }
 	//-----------------need improvement
 	public int numDistinct(String s, String t) {
         if (s.length() < t.length()) return 0;
