@@ -3,6 +3,111 @@ import java.util.List;
 import java.lang.Math;
 
 public class Solution {
+	//-----------------need improvement
+	public int numDistinct(String s, String t) {
+        if (s.length() < t.length()) return 0;
+        int[][] opt = new int[t.length() + 1][s.length() + 1];
+        opt[0][0] = 1;
+        for (int i = 0; i < t.length(); i++) {
+            int sum = opt[i][0];
+            for (int j = 0; j < s.length(); j++) {
+                if (s.charAt(j) == t.charAt(i)) {
+                        opt[i + 1][j + 1] += sum;
+                }
+                sum += opt[i][j + 1];
+            }
+        }
+        int sum = 0;
+        for (int j = 0; j < s.length(); j++) {
+            sum += opt[t.length()][j + 1];
+        }
+        return sum;
+    }
+    //--------------------need improvement m n
+    public boolean isInterleave(String s1, String s2, String s3) {
+        if (s1.length() == 0 && s2.compareTo(s3) != 0) return false;
+        if (s2.length() == 0 && s1.compareTo(s3) != 0) return false;
+        if (s1.length() == 0 && s2.length() == 0 && s3.length() == 0) return true;
+        if (s1.length() + s2.length() != s3.length()) 
+            return false;
+        boolean[][] opt = new boolean[s1.length() + 1][s2.length()+1];
+        opt[0][0] = true;
+        for (int i = 0; i < s3.length(); i++) {
+            for (int j = max(0, i + 1 - s2.length()); j <= min(i + 1, s1.length()); j++) {
+                //s1:j s2:i + 1 - j
+                if (i + 1 - j != 0 && s2.charAt(i - j) == s3.charAt(i)) { 
+                    opt[j][i + 1 - j] |= opt[j][i - j];
+                }
+                if (j != 0 && s1.charAt(j - 1) == s3.charAt(i)) {
+                    opt[j][i + 1 - j] |= opt[j - 1][i + 1 - j];
+                }
+            }
+        }
+        return opt[s1.length()][s2.length()];
+    }
+    //--------------------
+    public int numDecodings(String s) {
+        if (s.length() == 0) return 0;
+        int[] opt = new int[s.length() + 1];
+        opt[0] = 1; 
+        if (s.charAt(0) != '0') {
+            opt[1] = 1;   
+        }
+        for (int i = 1; i < s.length(); i++) {
+            if (s.charAt(i) != '0') {
+                opt[i + 1] = opt[i];
+            }
+            if (Integer.parseInt(s.substring(i - 1,i + 1)) <= 26 && s.charAt(i - 1) != '0') {
+                opt[i + 1] = opt[i - 1] + opt[i + 1];
+            }
+        }
+        return opt[s.length()];
+    }
+	//-------------------- need improvement
+	private boolean[][][][] scramblevisited;
+    private boolean[][][][] scrambleeopt;
+    private String s1;
+    private String s2;
+    public boolean isScramble(String s1, String s2) {
+        if (s1.length() != s2.length() || s1.length() == 0) return false;
+        if (s1.length() == 1)  {
+            if (s1.charAt(0) == s2.charAt(0)){
+               return true;
+            } else {
+                return false;
+            }
+        }
+        this.s1 = s1;
+        this.s2 = s2;
+        scramblevisited = new boolean[s2.length()][s2.length()][s2.length()][s2.length()];
+        scrambleeopt = new boolean[s2.length()][s2.length()][s2.length()][s2.length()];
+        for (int i = 0; i < s1.length() - 1; i++) {
+            if (scrambleDP(0, i, 0, i) && scrambleDP(i + 1, s1.length() - 1, i + 1, s1.length() - 1)) return true;
+            if (scrambleDP(0, i, s1.length() - 1 - i, s1.length() - 1) && scrambleDP(i + 1, s1.length() - 1, 0, s1.length() - i - 2))
+                return true;
+        }
+        return false;
+    }
+    private boolean scrambleDP(int l, int r, int s, int t) {
+        if (l == r && s == t) {
+            if (s1.charAt(l) == s2.charAt(s)) return true;
+            else return false;
+        }
+        if (scramblevisited[l][r][s][t]) return scrambleeopt[l][r][s][t];
+        scramblevisited[l][r][s][t] = true;
+        for (int i = 0; i < r - l; i++) {
+            if (scrambleDP(l, l + i, s, s + i) && scrambleDP(l + i + 1, r, s + i + 1, t)) {
+                scrambleeopt[l][r][s][t] = true;
+                return true;
+            }
+            if (scrambleDP(l, l + i, t - i, t) && scrambleDP(l + i + 1, r, s, t - i - 1)) {
+                scrambleeopt[l][r][s][t] = true;
+                return true;
+            }
+        }
+        scrambleeopt[l][r][s][t] = false;
+        return false;
+    }
     //--------------------
     public int maximalRectangle(char[][] matrix) {
         if (matrix == null || matrix.length ==0 || matrix[0].length == 0) return 0;
